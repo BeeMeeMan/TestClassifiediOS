@@ -12,16 +12,26 @@ struct ItemsListView: View {
     
     var body: some View {
         NavigationView {
-            switch viewModel.downloadState {
-            case .notLoadedYet, .loading:  List { ProgressView() }.task { await viewModel.loadData() }
-            case .results(let results): makeListView(with: results)
-            case .failedToLoad: reloadButtom
+            Group {
+                switch viewModel.downloadState {
+                case .notLoadedYet, .loading:  List { ProgressView() }.task { await viewModel.loadData() }
+                case .results(let results): makeListView(with: results)
+                case .failedToLoad: reloadButtom
+                }
             }
+            .navigationTitle("Items list")
         }
-        .navigationBarTitleDisplayMode(.inline)
         .ignoresSafeArea()
     }
-    
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ItemsListView()
+    }
+}
+
+extension ItemsListView {
     var reloadButtom: some View {
         Button {
             viewModel.downloadState = .notLoadedYet
@@ -37,12 +47,6 @@ struct ItemsListView: View {
                     .font(.headline)
             }
         }
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ItemsListView()
     }
 }
 
